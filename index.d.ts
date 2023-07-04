@@ -64,6 +64,29 @@ declare module 'react-native-callkeep' {
     selected?: boolean
   }
 
+  export type AudioSessionCategoryOption = {
+    mixWithOthers: 0x1,
+    duckOthers: 0x2,
+    interruptSpokenAudioAndMixWithOthers: 0x11;
+    allowBluetooth: 0x4;
+    allowBluetoothA2DP: 0x20;
+    allowAirPlay: 0x40;
+    defaultToSpeaker: 0x8;
+    overrideMutedMicrophoneInterruption: 0x80;
+  }
+  
+  export type AudioSessionMode = {
+    default: 'AVAudioSessionModeDefault';
+    gameChat: 'AVAudioSessionModeGameChat';
+    measurement: 'AVAudioSessionModeMeasurement';
+    moviePlayback: 'AVAudioSessionModeMoviePlayback';
+    spokenAudio: 'AVAudioSessionModeSpokenAudio';
+    videoChat: 'AVAudioSessionModeVideoChat';
+    videoRecording: 'AVAudioSessionModeVideoRecording';
+    voiceChat: 'AVAudioSessionModeVoiceChat';
+    voicePrompt: 'AVAudioSessionModeVoicePrompt';
+  }
+
   interface IOptions {
     ios: {
       appName: string,
@@ -73,6 +96,10 @@ declare module 'react-native-callkeep' {
       maximumCallsPerCallGroup?: string,
       ringtoneSound?: string,
       includesCallsInRecents?: boolean
+      audioSession?: {
+        categoryOptions?: keyof AudioSessionCategoryOption | number,
+        mode?: keyof AudioSessionMode | string,
+      }
     },
     android: {
       alertTitle: string,

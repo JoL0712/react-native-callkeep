@@ -897,68 +897,16 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
 #endif
 
     NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
-    AVAudioSessionMode mode = AVAudioSessionModeDefault;
-
-    if (settings[@"audioSession"]) {
-        if (settings[@"audioSession"]["category"]) {
-            categoryOptions = 0;
-            for (NSString *opt in settings[@"audioSession"]["categoryOptions"]) {
-                switch (opt) {
-                    case "mixWithOthers":
-                        categoryOptions |= AVAudioSessionCategoryOptionMixWithOthers
-                        break;
-                    case "duckOthers":
-                        categoryOptions |= AVAudioSessionCategoryOptionDuckOthers
-                        break;
-                    case "interruptSpokenAudioAndMixWithOthers":
-                        categoryOptions |= AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
-                        break;
-                    case "allowBluetooth":
-                        categoryOptions |= AVAudioSessionCategoryOptionAllowBluetooth
-                        break;
-                    case "allowBluetoothA2DP":
-                        categoryOptions |= AVAudioSessionCategoryOptionAllowBluetoothA2DP
-                        break;
-                    case "allowAirPlay":
-                        categoryOptions |= AVAudioSessionCategoryOptionAllowAirPlay
-                        break;
-                    case "defaultToSpeaker":
-                        categoryOptions |= AVAudioSessionCategoryOptionDefaultToSpeaker
-                        break;
-                    case "overrideMutedMicrophoneInterruption":
-                        categoryOptions |= AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption
-                        break;
-                }
-            }
+    NSString *mode = AVAudioSessionModeDefault;
+    
+    NSDictionary *settings = [RNCallKeep getSettings];
+    if (settings && settings[@"audioSession"]) {
+        if (settings[@"audioSession"][@"categoryOptions"]) {
+            categoryOptions = [settings[@"audioSession"][@"categoryOptions"] integerValue];
         }
 
-        if (settings[@"audioSession"]["mode"]) {
-            switch (settings[@"audioSession"]["mode"]) {
-                case "gameChat":
-                    mode = AVAudioSessionModeGameChat;
-                    break;
-                case "measurement":
-                    mode = AVAudioSessionModeMeasurement;
-                    break;
-                case "moviePlayback":
-                    mode = AVAudioSessionModeMoviePlayback;
-                    break;
-                case "spokenAudio":
-                    mode = AVAudioSessionModeSpokenAudio;
-                    break;
-                case "videoChat":
-                    mode = AVAudioSessionModeVideoChat;
-                    break;
-                case "videoRecording":
-                    mode = AVAudioSessionModeVideoRecording;
-                    break;
-                case "voiceChat":
-                    mode = AVAudioSessionModeVoiceChat;
-                    break;
-                case "voicePrompt":
-                    mode = AVAudioSessionModeVoicePrompt;
-                    break;
-            }
+        if (settings[@"audioSession"][@"mode"]) {
+            mode = settings[@"audioSession"][@"mode"];
         }
     }
     
