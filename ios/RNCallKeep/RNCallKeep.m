@@ -896,10 +896,76 @@ RCT_EXPORT_METHOD(getAudioRoutes: (RCTPromiseResolveBlock)resolve
     NSLog(@"[RNCallKeep][configureAudioSession] Activating audio session");
 #endif
 
-    AVAudioSession* audioSession = [AVAudioSession sharedInstance];
-    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:nil];
+    NSUInteger categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+    AVAudioSessionMode mode = AVAudioSessionModeDefault;
 
-    [audioSession setMode:AVAudioSessionModeDefault error:nil];
+    if (settings[@"audioSession"]) {
+        if (settings[@"audioSession"]["category"]) {
+            categoryOptions = 0;
+            for (NSString *opt in settings[@"audioSession"]["categoryOptions"]) {
+                switch (opt) {
+                    case "mixWithOthers":
+                        categoryOptions |= AVAudioSessionCategoryOptionMixWithOthers
+                        break;
+                    case "duckOthers":
+                        categoryOptions |= AVAudioSessionCategoryOptionDuckOthers
+                        break;
+                    case "interruptSpokenAudioAndMixWithOthers":
+                        categoryOptions |= AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
+                        break;
+                    case "allowBluetooth":
+                        categoryOptions |= AVAudioSessionCategoryOptionAllowBluetooth
+                        break;
+                    case "allowBluetoothA2DP":
+                        categoryOptions |= AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                        break;
+                    case "allowAirPlay":
+                        categoryOptions |= AVAudioSessionCategoryOptionAllowAirPlay
+                        break;
+                    case "defaultToSpeaker":
+                        categoryOptions |= AVAudioSessionCategoryOptionDefaultToSpeaker
+                        break;
+                    case "overrideMutedMicrophoneInterruption":
+                        categoryOptions |= AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption
+                        break;
+                }
+            }
+        }
+
+        if (settings[@"audioSession"]["mode"]) {
+            switch (settings[@"audioSession"]["mode"]) {
+                case "gameChat":
+                    mode = AVAudioSessionModeGameChat;
+                    break;
+                case "measurement":
+                    mode = AVAudioSessionModeMeasurement;
+                    break;
+                case "moviePlayback":
+                    mode = AVAudioSessionModeMoviePlayback;
+                    break;
+                case "spokenAudio":
+                    mode = AVAudioSessionModeSpokenAudio;
+                    break;
+                case "videoChat":
+                    mode = AVAudioSessionModeVideoChat;
+                    break;
+                case "videoRecording":
+                    mode = AVAudioSessionModeVideoRecording;
+                    break;
+                case "voiceChat":
+                    mode = AVAudioSessionModeVoiceChat;
+                    break;
+                case "voicePrompt":
+                    mode = AVAudioSessionModeVoicePrompt;
+                    break;
+            }
+        }
+    }
+    
+    AVAudioSession* audioSession = [AVAudioSession sharedInstance];
+    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:categoryOptions error:nil];
+
+    [audioSession setMode:mode error:nil];
 
     double sampleRate = 44100.0;
     [audioSession setPreferredSampleRate:sampleRate error:nil];
